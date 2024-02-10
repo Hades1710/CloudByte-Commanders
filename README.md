@@ -71,26 +71,13 @@ Usage in the Project: Parallelize data preprocessing steps, tokenization, or oth
   
   </p>
   
-[Intel](https://www.intel.in/content/www/in/en/homepage.html) [Intel OneAPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview.html) [Intel Devcloud](https://www.intel.com/content/www/us/en/developer/tools/devcloud/overview.html) [Intel Base toolkits](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html),  [Intel OneAPI AI Analytics](https://www.intel.com/content/www/us/en/developer/tools/oneapi/ai-analytics-toolkit.html)
+[Intel](https://www.intel.in/content/www/in/en/homepage.html) 
+[Intel OneAPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview.html) 
+[Intel Devcloud](https://www.intel.com/content/www/us/en/developer/tools/devcloud/overview.html)
+[Intel Base toolkits](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html), 
+[Intel OneAPI AI Analytics](https://www.intel.com/content/www/us/en/developer/tools/oneapi/ai-analytics-toolkit.html)
 
   
-  <h2>Predictive Analysis</h2>
-  
-  
-  ![Screenshot 2023-06-06 233452](https://github.com/CodeeDharani/Hack2skill-Intel-OneAPI-Hackathon-AI-Analytics-toolkits-Human-fertility/assets/110709707/b15e518b-ce45-4714-ad00-59942592f35b)
 
-  
-![Screenshot 2023-06-06 233838](https://github.com/CodeeDharani/Hack2skill-Intel-OneAPI-Hackathon-AI-Analytics-toolkits-Human-fertility/assets/110709707/85e3d053-2c59-408e-9933-9859055b6079)
-
-
-<h2>Summary</h2>
-
-**Extraction of video:** It could involve techniques such as video processing, object detection, or tracking to extract specific data points or analyze the content of the videos.<br />
-**Prediction of sperm fertility:** This model aims to predict or assess the fertility potential of sperm samples based on the results of standard semen analysis.<br />
-**Semen Principal Components Analysis:** This model involves performing Principal Component Analysis (PCA) on the semen analysis data.<br />
-**Sex hormones:** This model focuses on analyzing the serum levels of sex hormones measured in the blood of the participants.<br />
-**Sperm Motility:** It may involve image or video analysis techniques to track and analyze the movement of sperm cells.<br />
-**Sex hormones PCA:** Similar to the Semen Principal Components Analysis, this model applies PCA to the serum levels of sex hormones to identify underlying patterns or factors within the hormone data.<br />
-**YOLOv5 of Prediction of sperm fertility:** The YOLOv5 model is applied specifically to predict or detect sperm fertility-related attributes or factors within the videos associated with the participants.
 
 <img width="1100" alt="2022-04-09_122409" src="https://github.com/CodeeDharani/Hack2skill-Intel-OneAPI-Hackathon-AI-Analytics-toolkits-Human-fertility/assets/110709707/3683a662-c18e-4be1-bff7-e4a5a49ed5ca">
