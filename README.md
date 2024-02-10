@@ -80,4 +80,4 @@ Usage in the Project: Parallelize data preprocessing steps, tokenization, or oth
   
 
 
-<img width="1100" alt="2022-04-09_122409" src="https://github.com/CodeeDharani/Hack2skill-Intel-OneAPI-Hackathon-AI-Analytics-toolkits-Human-fertility/assets/110709707/3683a662-c18e-4be1-bff7-e4a5a49ed5ca">
+<img width="1100" alt="2022-04-09_122409" src="https://mms.businesswire.com/media/20221216005068/en/1667146/4/oneAPI_multiarchitecture_image.jpg">
