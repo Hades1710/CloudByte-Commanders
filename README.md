@@ -42,11 +42,6 @@ includes
 2. Predicting academic success using personality traits, and 
 3.Developing personalized education delivery systems.
   <br />
-  </p>
-  
-  [VISEM](https://datasets.simula.no//visem/)
-  
-<p>
 <h2>Features</h2>
   
 **Personality assessment:** Tools to assess the personality traits of both educators and students, potentially using established models like the Big Five.<br /> 
