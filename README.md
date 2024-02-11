@@ -3,11 +3,6 @@
 <centre><h1>Personalised learning by optimizing teacher-student interactions based on personality</h1></centre>
  <img width="500" alt="2022-04-09_122409" src="https://github.com/CodeeDharani/Hack2skill-Intel-OneAPI-Hackathon-AI-Analytics-toolkits-Human-fertility/assets/110709707/6ef83656-060c-4e54-86de-964bc64a1b0c"> 
    </div>
-<h2>Team Members: </h2>
-  <h4>1) JNYANADEEP B(Cyber Security) </h4>
-  <h4>3) CHINMAY J(AI&ML)</h4>
-  <h4>2) S KUSHAAL(AI&ML)</h4>
-  <h4>3) PRAJWAL M(CSE)</h4>
    
    <br />
    
@@ -55,14 +50,14 @@ includes
 <p>
 1.<strong>Intel oneAPI Data Analytics Library (oneDAL):</strong> Provides highly optimized algorithms for data preprocessing, analysis, and machine learning tasks. Optimize data pipelines, feature extraction, and other preprocessing steps using oneDAL functions. Usage in the Project:Utilize oneDAL for efficient processing and analysis of the collected personality traits and academic performance data.
 
-2.Intel oneAPI Deep Neural Network Library (oneDNN): Accelerates deep learning workloads by providing primitives for neural network operations. Usage in the Project: Optimize neural network models used in the machine learning system for compatibility prediction. Improve the performance of training and inference tasks by leveraging oneDNN capabilities.
+2.<strong>Intel oneAPI Deep Neural Network Library (oneDNN):</strong> Accelerates deep learning workloads by providing primitives for neural network operations. Usage in the Project: Optimize neural network models used in the machine learning system for compatibility prediction. Improve the performance of training and inference tasks by leveraging oneDNN capabilities.
 
-3.Intel Math Kernel Library (MKL): Optimized for mathematical and linear algebra operations, enhancing the performance of numerical computations Optimize mathematical computations related to personality trait analysis and academic performance prediction. Usage in the Project: Apply MKL functions to accelerate linear algebra operations within machine learning models.
+3.<strong>Intel Math Kernel Library (MKL):</strong> Optimized for mathematical and linear algebra operations, enhancing the performance of numerical computations Optimize mathematical computations related to personality trait analysis and academic performance prediction. Usage in the Project: Apply MKL functions to accelerate linear algebra operations within machine learning models.
 
-4.Intel oneAPI Threading Building Blocks (TBB): Facilitates parallelism in C++ applications, which can be beneficial for parallelizing NLP tasks.
+4.<strong>Intel oneAPI Threading Building Blocks (TBB):</strong> Facilitates parallelism in C++ applications, which can be beneficial for parallelizing NLP tasks.
 Usage in the Project: Parallelize data preprocessing steps, tokenization, or other NLP tasks to efficiently use multicore processors. Improve overall performance by leveraging parallelism in data processing workflows.
 
-5.Intel Scalable Dataframe Compiler (SDC): Accelerates data science workflows by providing just-in-time compilation for Pandas dataframes. Usage in the Project: Optimize data manipulation and feature engineering steps using SDC to improve performance. Speed up data preprocessing tasks related to personality and academic performance analysis.
+5.<strong>Intel Scalable Dataframe Compiler (SDC):</strong> Accelerates data science workflows by providing just-in-time compilation for Pandas dataframes. Usage in the Project: Optimize data manipulation and feature engineering steps using SDC to improve performance. Speed up data preprocessing tasks related to personality and academic performance analysis.
   
   </p>
   
