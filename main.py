@@ -1,154 +1,143 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
-import tensorflow as tf
-from sklearn.metrics import mean_absolute_error, classification_report, accuracy_score, confusion_matrix
-from daal4py.sklearn import patch_sklearn as d4p_patch_sklearn
-from intel_tensorflow import IpuContext
-from intel_neural_compressor import Compressor
-import seaborn as sns
-import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import cross_val_score
+from sklearn.compose import ColumnTransformer
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.impute import SimpleImputer
+from tensorflow import keras
+from tensorflow.keras.layers import Input, Dense, Embedding, LSTM, Concatenate, Flatten
+from tensorflow.keras.models import Model
 
-# Assuming you have a CSV file for both students and teachers
-students_data = pd.read_csv('C:\\Users\\jnyanadeep\\Desktop\\student_prediction.csv')
-teachers_data = pd.read_csv('C:\\Users\\jnyanadeep\\Desktop\\Teacher_survey.csv')
+# Load student and teacher datasets
+students_data = pd.read_csv('student_prediction.csv') #Please keep the csv files in the same folder as main.py
+teachers_data = pd.read_csv('Teacher_survey.csv')
 
-# Assuming 'Course ID' is a common column in both datasets
-merged_data = pd.merge(students_data, teachers_data, on='Course ID', how='inner')
+# Assuming 'StudentID' is a common identifier in both datasets
+common_column = 'Course ID'
 
-# Select relevant features for mapping and prediction
-mapping_features = ['STUDY_HRS', 'READ_FREQ', 'READ_FREQ_SCI', 'ATTEND_DEPT', 'IMPACT', 'ATTEND', 'PREP_EXAM', 'LISTENS', 'LIKES_DISCUSS']
-teacher_features = ['I prefer to plan my tasks well in advance rather than dealing with them spontaneously.',
-                    'I enjoy engaging in lively discussions and debates with colleagues and students.',
-                    'I find satisfaction in guiding and mentoring students towards their academic and professional goals.',
-                    'I tend to keep a professional distance from my students, maintaining a strictly academic relationship.',
-                    'I enjoy exploring innovative teaching techniques and see mistakes and setbacks as opportunities for growth.',
-                    'I prioritize academic excellence above all else, even if it means pushing students to their limits.',
-                    'I am passionate about my subject area and enjoy sharing my enthusiasm with others.',
-                    'I am patient and understanding when working with students who are struggling academically.',
-                    'I believe in the importance of ethics and integrity in academic research and teaching.',
-                    'I value creativity and encourage students to think outside the box in their assignments and projects']
+# Merge datasets without specifying a common column
+merged_data = pd.merge(students_data, teachers_data, how='inner', on=common_column)
 
-# Create feature and target datasets
-X = merged_data[mapping_features + teacher_features]
-y = merged_data['GRADE']
+# List of columns containing teacher responses
+teacher_response_columns = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9','q10']
 
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-# Get the predicted grades for each student
-predictions_intel = model.predict(preprocessor.transform(X_test))
-predictions_tf = model_tf.predict(X_test)
+# Concatenate teacher responses into a single column
+merged_data['TeacherResponses'] = merged_data[teacher_response_columns].apply(lambda x: ' '.join(x.astype(str)), axis=1)
 
-# Create a table with mapping information
-mapping_table = pd.DataFrame({
-    'Student_ID': X_test.index,
-    'Teacher_ID_Intel': np.argmax(predictions_intel, axis=1),
-    'Teacher_ID_TensorFlow': np.argmax(predictions_tf, axis=1),
-    'Predicted_Grade_Intel': np.round(predictions_intel).astype(int),
-    'Predicted_Grade_TensorFlow': np.round(predictions_tf).astype(int),
-    'True_Grade': y_test
-})
+# Feature extraction using TfidfVectorizer for teacher responses
+vectorizer = TfidfVectorizer(stop_words='english')
+X_text = vectorizer.fit_transform(merged_data['TeacherResponses'])
 
-# Display the mapping table
-print(mapping_table)
-# Preprocessing for numerical data
-numeric_features = X.select_dtypes(include=['float64', 'int64']).columns
+# Feature engineering for student attributes
+numeric_features = ['STUDY_HRS', 'READ_FREQ', 'READ_FREQ_SCI', 'ATTEND_DEPT',
+                    'PREP_STUDY', 'PREP_EXAM',  'CUML_GPA', 'EXP_GPA','GRADE']
+
+
+
+# Preprocessing for numerical and categorical data
 numeric_transformer = Pipeline(steps=[
     ('imputer', SimpleImputer(strategy='mean')),
     ('scaler', StandardScaler())
 ])
 
-# Preprocessing for categorical data
-categorical_features = X.select_dtypes(include=['object']).columns
 categorical_transformer = Pipeline(steps=[
     ('imputer', SimpleImputer(strategy='most_frequent')),
     ('onehot', OneHotEncoder(handle_unknown='ignore'))
 ])
 
-# Bundle preprocessing for numerical and categorical data
 preprocessor = ColumnTransformer(
     transformers=[
         ('num', numeric_transformer, numeric_features),
-        ('cat', categorical_transformer, categorical_features)
+       
     ])
 
-# Initialize Intel oneAPI context
-d4p_patch_sklearn()
-IpuContext()
+# Combine teacher and student features
+X_teacher = X_text.toarray()
+X_student = preprocessor.fit_transform(merged_data)
 
-# Intel oneDNN Compressor
-with Compressor():
-    # Define the model using Intel oneDAL
-    model = tf.keras.Sequential([
-        tf.keras.layers.Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
-        tf.keras.layers.Dense(1, activation='sigmoid')
-    ])
+# Neural Network Model
+input_teacher = Input(shape=(X_teacher.shape[1],))
+input_student = Input(shape=(X_student.shape[1],))
 
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+# Embedding layer for teacher responses
+embedding_teacher = Embedding(input_dim=X_teacher.shape[1], output_dim=32, input_length=X_teacher.shape[1])(input_teacher)
+flatten_teacher = Flatten()(embedding_teacher)
 
-    # Train the model
-    model.fit(preprocessor.fit_transform(X_train), y_train, epochs=50, batch_size=32, verbose=0)
+# Concatenate teacher and student features
+concatenated_features = Concatenate()([flatten_teacher, input_student])
 
-    # Make predictions
-    predictions_intel = model.predict(preprocessor.transform(X_test))
+# Dense layers for prediction
+dense1 = Dense(128, activation='relu')(concatenated_features)
+dense2 = Dense(64, activation='relu')(dense1)
+output_layer = Dense(1, activation='linear')(dense2)
 
-# Calculate MAE and Accuracy for Intel oneAPI
-mae_intel = mean_absolute_error(y_test, predictions_intel)
-accuracy_intel = accuracy_score(y_test, np.round(predictions_intel))
+# Model definition
+model = Model(inputs=[input_teacher, input_student], outputs=output_layer)
 
-print(f'Mean Absolute Error (Intel): {mae_intel}')
-print(f'Accuracy (Intel): {accuracy_intel}')
+# Compile the model
+model.compile(optimizer='adam', loss='mean_absolute_error')
 
-# TensorFlow Model
-model_tf = tf.keras.Sequential([
-    tf.keras.layers.Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
-    tf.keras.layers.Dense(1, activation='sigmoid')
-])
+# Split the data into training and testing sets
+X_train_teacher, X_test_teacher, X_train_student, X_test_student, y_train, y_test = train_test_split(
+    X_teacher, X_student, merged_data['GRADE'], test_size=0.2, random_state=42)
 
-model_tf.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+# Train the model
+model.fit([X_train_teacher, X_train_student], y_train, epochs=50, batch_size=32, verbose=1)
 
-# Train the TensorFlow model
-model_tf.fit(X_train, y_train, epochs=50, batch_size=32, verbose=0)
+# Evaluate the model
+mae = model.evaluate([X_test_teacher, X_test_student], y_test)
+print(f'Mean Absolute Error: {mae}')
 
-# Make predictions
-predictions_tf = model_tf.predict(X_test)
+# Make predictions on test data
+predictions = model.predict([X_test_teacher, X_test_student])
 
-# Calculate MAE and Accuracy for TensorFlow
-mae_tf = mean_absolute_error(y_test, predictions_tf)
-accuracy_tf = accuracy_score(y_test, np.round(predictions_tf))
+# Calculate MAE for the model
+mae = mean_absolute_error(y_test, predictions)
+print(f'Mean Absolute Error: {mae}')
 
-print(f'Mean Absolute Error (TensorFlow): {mae_tf}')
-print(f'Accuracy (TensorFlow): {accuracy_tf}')
+# Assuming you have predictions and y_test
+print(f'Length of STUDENTID: {len(merged_data["STUDENTID"])}')
+print(f'Length of TEACHERID: {len(merged_data["TEACHERID"])}')
+print(f'Length of Predictions: {len(predictions.flatten())}')
+print(f'Length of True Grades: {len(y_test)}')
+print(predictions.shape)
+print(merged_data.index)
+print(predictions.index)
+print(y_test.index)
 
-# Confusion Matrix
-conf_matrix_intel = confusion_matrix(y_test, np.round(predictions_intel), labels=range(8))
-conf_matrix_tf = confusion_matrix(y_test, np.round(predictions_tf), labels=range(8))
 
-# Plot heatmaps
-fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-sns.heatmap(conf_matrix_intel, annot=True, fmt='d', cmap='Blues', ax=axes[0, 0], cbar=False)
-axes[0, 0].set_title('Confusion Matrix (Intel)')
-axes[0, 0].set_xlabel('Predicted Grade')
-axes[0, 0].set_ylabel('True Grade')
+# Reset indices to ensure alignment
+merged_data = merged_data.reset_index(drop=True)
+y_test = y_test.reset_index(drop=True)
 
-sns.heatmap(conf_matrix_tf, annot=True, fmt='d', cmap='Blues', ax=axes[0, 1], cbar=False)
-axes[0, 1].set_title('Confusion Matrix (TensorFlow)')
-axes[0, 1].set_xlabel('Predicted Grade')
-axes[0, 1].set_ylabel('True Grade')
+## Scatter plot of True Grade vs. Predicted Grade
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='True_Grade', y='Predicted_Grade', data=mapping_table, hue='Teacher_ID')
+plt.title('True Grade vs. Predicted Grade')
+plt.xlabel('True Grade')
+plt.ylabel('Predicted Grade')
+plt.legend(title='Teacher ID', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.show()
 
-sns.heatmap(conf_matrix_intel / np.sum(conf_matrix_intel), annot=True, fmt='.2%', cmap='Blues', ax=axes[1, 0], cbar=False)
-axes[1, 0].set_title('Normalized Confusion Matrix (Intel)')
-axes[1, 0].set_xlabel('Predicted Grade')
-axes[1, 0].set_ylabel('True Grade')
+# Bar plot of Grade Improvement Percentage
+plt.figure(figsize=(10, 6))
+sns.barplot(x='Teacher_ID', y='Grade_Improvement_Percentage', data=mapping_table)
+plt.title('Grade Improvement Percentage by Teacher')
+plt.xlabel('Teacher ID')
+plt.ylabel('Grade Improvement Percentage')
+plt.show()
 
-sns.heatmap(conf_matrix_tf / np.sum(conf_matrix_tf), annot=True, fmt='.2%', cmap='Blues', ax=axes[1, 1], cbar=False)
-axes[1, 1].set_title('Normalized Confusion Matrix (TensorFlow)')
-axes[1, 1].set_xlabel('Predicted Grade')
-axes[1, 1].set_ylabel('True Grade')
-
-plt.tight_layout()
+# Box plot of Grade Improvement Percentage by Teacher
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='Teacher_ID', y='Grade_Improvement_Percentage', data=mapping_table)
+plt.title('Grade Improvement Percentage by Teacher')
+plt.xlabel('Teacher ID')
+plt.ylabel('Grade Improvement Percentage')
 plt.show()
