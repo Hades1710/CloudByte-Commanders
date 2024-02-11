@@ -53,7 +53,7 @@ includes
 
  **Technologies used(Mark down one API Analytics libraries used) for ML and NLP**
 <p>
-1. **Intel oneAPI Data Analytics Library (oneDAL)**: Provides highly optimized algorithms for data preprocessing, analysis, and machine learning tasks. Optimize data pipelines, feature extraction, and other preprocessing steps using oneDAL functions. Usage in the Project:Utilize oneDAL for efficient processing and analysis of the collected personality traits and academic performance data.
+1.<strong>Intel oneAPI Data Analytics Library (oneDAL):</strong> Provides highly optimized algorithms for data preprocessing, analysis, and machine learning tasks. Optimize data pipelines, feature extraction, and other preprocessing steps using oneDAL functions. Usage in the Project:Utilize oneDAL for efficient processing and analysis of the collected personality traits and academic performance data.
 
 2.Intel oneAPI Deep Neural Network Library (oneDNN): Accelerates deep learning workloads by providing primitives for neural network operations. Usage in the Project: Optimize neural network models used in the machine learning system for compatibility prediction. Improve the performance of training and inference tasks by leveraging oneDNN capabilities.
 
